@@ -26,17 +26,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         
         foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
-            $imageName = $_FILES['images']['name'][$key];
-            $imagePath = $uploadDir . basename($imageName);
-
+            $originalName = $_FILES['images']['name'][$key];
+            // Generate a unique name for the image
+            $uniqueName = uniqid() . '-' . basename($originalName);
+            $imagePath = $uploadDir . $uniqueName;
+    
             // Move the uploaded file to the desired directory
             if (move_uploaded_file($tmpName, $imagePath)) {
-                $imagePaths[] = $imagePath;
+                // Store only the file name, not the full path
+                $imagePaths[] = $uniqueName;
             } else {
-                $message = "Failed to upload image: $imageName";
+                $message = "Failed to upload image: $originalName";
                 break;
             }
         }
+    
+    
 
         if (empty($message)) {
             // Prepare SQL statement to insert product data

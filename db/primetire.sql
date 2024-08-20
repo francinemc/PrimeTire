@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 18, 2024 at 01:37 PM
+-- Generation Time: Aug 20, 2024 at 11:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -90,6 +90,36 @@ INSERT INTO `categories` (`category_id`, `created_at`, `category_name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `feedback`
+--
+
+CREATE TABLE `feedback` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `full_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `feedback` text NOT NULL,
+  `rating` tinyint(1) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `feedback`
+--
+
+INSERT INTO `feedback` (`id`, `user_id`, `full_name`, `email`, `feedback`, `rating`, `created_at`) VALUES
+(8, 1, 'Francine Cadavid', 'eyy@gmail.com', 'Hello, test feedback', 1, '2024-08-19 10:33:57'),
+(9, 1, 'Mark Andrew L. Manaig', 'marky@gmail.com', 'hello, i\'m marky!', 5, '2024-08-19 10:35:43'),
+(10, 1, 'Francinesaurpretty', 'eyy@gmail.com', 'tama na to, ayoko na xD', 3, '2024-08-19 10:46:35'),
+(11, 1, 'min9yu', 'min9yu17@gmail.com', 'aju nice!', 2, '2024-08-19 12:43:47'),
+(12, 1, 'dai dacasin', 'blancodairen5@gmail.com', 'wazzup', 1, '2024-08-19 13:04:36'),
+(13, 1, 'eca', 'eca@gmail.com', 'woooOoOoooOoW', 5, '2024-08-19 13:28:15'),
+(14, 19, 'hjkhk', 'testuser@gmail.com', 'mjmjhg vn vnnhf', 3, '2024-08-19 15:00:26'),
+(16, 19, 'Erica', 'eca@gmail.com', 'whahahahhhaahahah', 5, '2024-08-20 08:56:02');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `orders`
 --
 
@@ -138,10 +168,8 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `price`, `brand_id`, `image_url`, `description`, `stock`, `category`, `size_id`) VALUES
-(147, 'ghfgdrdsdfs', 46544.00, 2, '', '0', 5, 1, NULL),
-(148, 'BRidgestone jejejfjkhf', 8555.00, 1, '', '0', 5555, 1, NULL),
-(149, 'jhjhjhjhj', 667666.00, 1, '', '0', 5544, 2, NULL),
-(150, 'burathaghdfdfg', 4566.00, 2, '', '0', 4546, 2, NULL);
+(152, 'Bridgestone Gulong1', 78467.00, 1, '', 'hello, gulong', 7346, 1, NULL),
+(153, 'Burat Si Erica', 5.00, 3, '', 'AYOKO NGA MUKHANG BURAT SI ERICA ', 635, 2, NULL);
 
 -- --------------------------------------------------------
 
@@ -197,7 +225,10 @@ INSERT INTO `product_images` (`id`, `product_id`, `image_path`) VALUES
 (13, 147, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/tire1.jpg'),
 (14, 148, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/tire1.jpg'),
 (15, 149, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/tire2.jpg'),
-(16, 150, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/tire1.jpg');
+(16, 150, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/tire1.jpg'),
+(17, 151, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/tire1.jpg'),
+(18, 152, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/tire1.jpg'),
+(19, 153, 'C:\\xampp\\htdocs\\E-commerce\\ITEC75\\admin/uploads/contacts.jpg');
 
 -- --------------------------------------------------------
 
@@ -215,19 +246,14 @@ CREATE TABLE `product_sizes` (
 --
 
 INSERT INTO `product_sizes` (`id`, `size_id`) VALUES
-(147, 1),
-(147, 2),
-(147, 3),
-(147, 4),
-(148, 1),
-(149, 1),
-(149, 2),
-(149, 3),
-(149, 4),
-(150, 1),
-(150, 2),
-(150, 3),
-(150, 4);
+(152, 1),
+(152, 2),
+(152, 3),
+(152, 4),
+(153, 1),
+(153, 2),
+(153, 3),
+(153, 4);
 
 -- --------------------------------------------------------
 
@@ -285,7 +311,7 @@ INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `birth_date`, `gender`
 (5, 'francine', 'test1@gmail.com', '09811994390', '2024-08-01', 'Male', 'ivory st', 'blk 28 lot 8', 'CALABARZON (Region IV-A)', 'cavite', 'errfdfs', '4108', '$2y$10$ryqbXTpsMkY/0j4CxB8Ememd3lMCN6zSOXsZQ.EBzQHXGdIL5hiim', '2024-08-14 13:31:14', 1),
 (6, 'francine', 'francine1@gmail.com', '09811994390', '2024-08-06', 'Male', 'ivory st', 'blk 28 lot 8', 'CALABARZON (Region IV-A)', 'cavite', 'Silang', '4108', '$2y$10$sNptgQtSb79oy.UVMF.ayOaTpp5IVMAhiXZQGFDcTLoDluXmIDFuq', '2024-08-14 13:37:06', 1),
 (19, 'user', 'user@gmail.com', '73678465', '2024-07-30', 'Male', '123', '356', 'Northern Mindanao (Region X)', 'ormoc', 'burat', '7889', '$2y$10$oGeJT3cD7QE56sfQQsXI/.lq7Ko1NfxlPcR0k2GROjs.oH0fq9v7u', '2024-08-17 04:20:19', 1),
-(22, 'admin234', 'admin1@gmail.com', '8478758', '2024-08-28', 'Female', 'ytgfurgy', 'rrtfsedsfdgv', 'Zamboanga Peninsula (Region IX)', 'kfjkjhgjkf', 'ghrkjhgrfgjmnf', '6756', '$2y$10$X.A3nSFY4IX1y2aS42AnXep3auriHbw5kCLtKj0cAWlnqS7sP8LsC', '2024-08-17 10:25:05', 0);
+(23, 'test admin', 'admin@gmail.com', '09123456789', '2024-08-22', 'Female', 'fhjrwh', 'uyrfuyrgj', 'Central Visayas (Region VII)', 'yjerrgtf', 'yujsfguyregfu', '2345', '$2y$10$O1ScHoNYxHCYhIs9HR7SBexCJwqcLa.LAAUeRQvNvLpNEVEHNiHP2', '2024-08-19 10:53:50', 0);
 
 --
 -- Indexes for dumped tables
@@ -317,6 +343,14 @@ ALTER TABLE `cart_items`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`category_id`);
+
+--
+-- Indexes for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email` (`email`),
+  ADD KEY `fk_user_feedback` (`user_id`);
 
 --
 -- Indexes for table `orders`
@@ -404,6 +438,12 @@ ALTER TABLE `categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `feedback`
+--
+ALTER TABLE `feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
@@ -419,7 +459,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
 
 --
 -- AUTO_INCREMENT for table `product_details`
@@ -431,7 +471,7 @@ ALTER TABLE `product_details`
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `sizes`
@@ -443,7 +483,7 @@ ALTER TABLE `sizes`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables
@@ -461,6 +501,12 @@ ALTER TABLE `carts`
 ALTER TABLE `cart_items`
   ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `carts` (`id`),
   ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+
+--
+-- Constraints for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD CONSTRAINT `fk_user_feedback` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `orders`

@@ -1,3 +1,4 @@
+
 /* General Styles */
 * {
   margin: 0;
@@ -24,7 +25,7 @@ a:hover {
   background: rgba(255, 224, 167, 0.675);
   background: linear-gradient(
       167deg,
-      rgba(247, 206, 162, 0.934) 0%, !important
+      rgba(247, 206, 162, 0.934) 0%, 
       rgba(242, 242, 242, 1) 100%
   );
 }
@@ -55,7 +56,7 @@ a:hover {
   padding: 8px;
   margin-bottom: 8px;
   border-radius: 8px;
-  background-color: #f4f4f3; /* Light gray color for the background */
+  background-color: #ffd36ebd; /* Light gray color for the background */
   transition: background-color 0.2s ease-in-out;        
   cursor: pointer;
 }
@@ -176,4 +177,25 @@ a:hover {
   .categories {
       margin-bottom: 8px;
   }
+}
+
+.swiper-container {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #121416; /* Customize navigation button color */
+}
+
+.swiper-pagination-bullet {
+  background: #121416; /* Customize pagination bullet color */
 }
