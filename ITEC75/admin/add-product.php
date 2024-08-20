@@ -1,15 +1,18 @@
 <?php
-// Include the database connection file
 include '../db.php'; // Adjust path as necessary
 
+$message = ''; // Initialize message variable
+
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $productName = $_POST['product_name'];
     $category = $_POST['category'];
     $brand = $_POST['brand'];
     $description = $_POST['description'];
-    $size = $_POST['size']; // Array of selected sizes
+    $sizes = $_POST['sizes'] ?? []; // Array of selected sizes
     $stock = $_POST['stock'];
-    
+    $price = $_POST['price'];
+
     // Initialize an array to hold image paths
     $imagePaths = [];
 
@@ -37,29 +40,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (empty($message)) {
             // Prepare SQL statement to insert product data
-            $stmt = $mysqli->prepare("INSERT INTO products (product_name, category_id, brand, description, stock) VALUES (?, ?, ?, ?, ?)");
-            
+            $stmt = $mysqli->prepare("INSERT INTO products (name, category, brand_id, description, stock, price) VALUES (?, ?, ?, ?, ?, ?)");
+
             if ($stmt) {
                 // Bind parameters
-                $stmt->bind_param('ssssi', $productName, $category, $brand, $description, $stock);
-                
+                $stmt->bind_param('ssisii', $productName, $category, $brand, $description, $stock, $price);
+
                 // Execute the statement
                 if ($stmt->execute()) {
                     $productId = $stmt->insert_id;
                     $stmt->close();
 
                     // Insert sizes into the product_sizes table
-                    $stmt = $mysqli->prepare("INSERT INTO sizes (product_id, size_id) VALUES (?, ?)");
-                    
-                    if ($stmt) {
-                        foreach ($sizes as $sizeId) {
-                            $stmt->bind_param('ii', $productId, $sizeId);
-                            $stmt->execute();
+                    if (!empty($sizes)) {
+                        $stmt = $mysqli->prepare("INSERT INTO product_sizes (id, size_id) VALUES (?, ?)");
+                        
+                        if ($stmt) {
+                            foreach ($sizes as $sizeId) {
+                                if (isset($productId) && isset($sizeId)) {
+                                    $stmt->bind_param('ii', $productId, $sizeId);
+                                    $stmt->execute();
+                                }
+                            }
+                            $stmt->close();
+                        } else {
+                            $message = "Failed to prepare SQL statement for product_sizes.";
                         }
-                        $stmt->close();
+                    } else {
+                        $message = "No sizes selected.";
                     }
 
-                    // Insert image paths into the database
+                    // Insert image paths into the product_images table
                     $stmt = $mysqli->prepare("INSERT INTO product_images (product_id, image_path) VALUES (?, ?)");
                     
                     if ($stmt) {
@@ -84,9 +95,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Fetch categories and sizes for dropdowns
+// Fetch categories, sizes, and brands for dropdowns
 $categories = [];
 $sizes = [];
+$brands = []; // Initialize brands array
 
 try {
     // Fetch categories
@@ -102,6 +114,13 @@ try {
         $sizes = $result->fetch_all(MYSQLI_ASSOC);
         $result->free();
     }
+
+    // Fetch brands
+    $result = $mysqli->query("SELECT brand_id, brand_name FROM brands"); // Adjust table and column names as needed
+    if ($result) {
+        $brands = $result->fetch_all(MYSQLI_ASSOC);
+        $result->free();
+    }
 } catch (mysqli_sql_exception $e) {
     $message = "Database error: " . $e->getMessage();
 }
@@ -109,15 +128,12 @@ try {
 // Close the database connection
 $mysqli->close();
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
-    <link rel="stylesheet" href="add-product.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -132,13 +148,13 @@ $mysqli->close();
 
         .sidebar {
             width: 250px;
-            background-color: #121416; /* Color 3 */
+            background-color: #121416; /* Dark background color */
             padding: 20px;
             min-height: 100vh;
         }
 
         .sidebar h2 {
-            color: #efc143; /* Color 1 */
+            color: #efc143; /* Yellow color */
             font-size: 22px;
             text-align: center;
         }
@@ -162,7 +178,7 @@ $mysqli->close();
         }
 
         .sidebar ul li a:hover {
-            background-color: #eb7324; /* Color 2 */
+            background-color: #eb7324; /* Orange color */
             border-radius: 5px;
         }
 
@@ -172,7 +188,7 @@ $mysqli->close();
         }
 
         .main-content header {
-            background-color: #efc143; /* Color 1 */
+            background-color: #efc143; /* Yellow color */
             padding: 20px;
             border-bottom: 1px solid #e1e1e1;
             display: flex;
@@ -182,24 +198,79 @@ $mysqli->close();
 
         .main-content h2 {
             margin-top: 0;
-            color: #121416; /* Color 3 */
+            color: #121416; /* Dark color */
         }
-        
-        
-        .main-content input[type="text"],
-        .main-content textarea,
-        .main-content select,
-        .main-content input[type="file"],
-        .main-content input[type="number"] {
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Adds space between form elements */
+        }
+
+        .container form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Adds space between form elements */
+        }
+
+        .container label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .container input[type="text"],
+        .container textarea,
+        .container select,
+        .container input[type="number"] {
             padding: 10px;
             border: 1px solid #e1e1e1;
             border-radius: 5px;
             width: 100%;
-            margin-bottom: 20px;
+            box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
         }
 
-        .main-content form button:hover {
-            background-color: #d15d00; /* Slightly darker shade of Color 2 */
+        .container input[type="file"] {
+            padding: 3px; /* Adjust padding for file input */
+        }
+
+        .size-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .size-container label {
+            margin: 0;
+        }
+
+        .size-container input[type="checkbox"] {
+            margin-right: 10px;
+            vertical-align: middle; /* Align checkbox with text */
+        }
+
+        .size-container input[type="checkbox"] + label {
+            vertical-align: middle; /* Align label with checkbox */
+        }
+
+        .container button {
+            padding: 10px;
+            background-color: #efc143; /* Yellow color */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .container button:hover {
+            background-color: #d15d00; /* Darker orange shade */
         }
 
         .message {
@@ -235,42 +306,54 @@ $mysqli->close();
             <?php if (!empty($message)): ?>
                 <div class="message"><?php echo htmlspecialchars($message); ?></div>
             <?php endif; ?>
-            <form action="add-product.php" method="POST" enctype="multipart/form-data">
-    <label for="product-name">Product Name:</label>
-    <input type="text" id="product-name" name="product_name" required>
+            <div class="container">
+                <form action="add-product.php" method="POST" enctype="multipart/form-data">
+                    <label for="product-name">Product Name:</label>
+                    <input type="text" id="product-name" name="product_name" required>
 
-    <label for="category">Category:</label>
-    <select id="category" name="category" required>
-        <?php foreach ($categories as $cat): ?>
-            <option value="<?php echo htmlspecialchars($cat['category_id']); ?>">
-                <?php echo htmlspecialchars($cat['category_name']); ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+                    <label for="category">Category:</label>
+                    <select id="category" name="category" required>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?php echo htmlspecialchars($cat['category_id']); ?>">
+                                <?php echo htmlspecialchars($cat['category_name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
 
-    <label for="brand">Brand:</label>
-    <input type="text" id="brand" name="brand" required>
+                    <label for="brand">Brand:</label>
+                    <select id="brand" name="brand" required>
+                        <?php foreach ($brands as $brand): ?>
+                            <option value="<?php echo htmlspecialchars($brand['brand_id']); ?>">
+                                <?php echo htmlspecialchars($brand['brand_name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
 
-    <label for="description">Description:</label>
-    <textarea id="description" name="description" required></textarea>
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required></textarea>
 
-    <label for="size">Size:</label><br>
-    <?php foreach ($sizes as $sz): ?>
-        <input type="checkbox" id="size-<?php echo $sz['size_id']; ?>" name="sizes[]" value="<?php echo htmlspecialchars($sz['size_id']); ?>">
-        <label for="size-<?php echo $sz['size_id']; ?>"><?php echo htmlspecialchars($sz['size_value']); ?></label><br>
-    <?php endforeach; ?>
+                    <div class="size-container">
+                        <label>Size:</label>
+                        <?php foreach ($sizes as $sz): ?>
+                            <div>
+                                <input type="checkbox" id="size-<?php echo $sz['size_id']; ?>" name="sizes[]" value="<?php echo htmlspecialchars($sz['size_id']); ?>">
+                                <label for="size-<?php echo $sz['size_id']; ?>"><?php echo htmlspecialchars($sz['size_value']); ?></label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
 
-    <label for="stock">Stock:</label>
-    <input type="number" id="stock" name="stock" required>
+                    <label for="stock">Stock:</label>
+                    <input type="number" id="stock" name="stock" required>
 
-    <label for="images">Images:</label>
-    <input type="file" id="images" name="images[]" accept="image/*" multiple required>
+                    <label for="price">Price:</label>
+                    <input type="number" id="price" name="price" step="0.01" required>
 
-    <button type="submit">Add Product</button>
-</form>
+                    <label for="images">Images:</label>
+                    <input type="file" id="images" name="images[]" accept="image/*" multiple required>
 
- 
-
+                    <button type="submit">Add Product</button>
+                </form>
+            </div>
         </div>
     </div>
 </body>

@@ -3,8 +3,8 @@ session_start();
 include 'db.php'; // Ensure this file contains the database connection setup
 
 // Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
 }
 
 $message = "";
@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Check if the email already exists
     $sql = "SELECT id FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
+    $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insert new user into the database
         $sql = "INSERT INTO users (email, password, full_name, phone, birth_date, gender, address1, address2, barangay, city, region, postal_code, role)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
+        $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ssssssssssssi", $email, $password, $fullName, $phone, $birthDate, $gender, $address1, $address2, $barangay, $city, $region, $postalCode, $role);
 
         if ($stmt->execute()) {

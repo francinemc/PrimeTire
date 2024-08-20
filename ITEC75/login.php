@@ -2,11 +2,6 @@
 session_start();
 include 'db.php'; // Ensure this file contains the database connection setup
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
 $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -14,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     $sql = "SELECT id, full_name, password, role FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
+    $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
@@ -30,8 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['full_name'] = $full_name;
             $_SESSION['role'] = $role;
 
-            // Redirect based on role#
-            // echo 'role:'.$role;
+            // Redirect based on role
             if ($role === 0) {
                 // Redirect to admin page
                 header("Location: admin/admin.php");
@@ -48,9 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $stmt->close();
-    $conn->close();
+    $mysqli->close();
 }
 ?>
+
+            
 
 <!DOCTYPE html>
 <html lang="en">

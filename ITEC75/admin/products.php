@@ -1,10 +1,53 @@
+<?php
+// Include the database connection file
+include '../db.php'; // Adjust path as necessary
+
+// Initialize variables
+$products = [];
+$message = ''; // For error messages
+
+try {
+    // Query to fetch products with their sizes, categories, brands, and images
+    $query = "
+        SELECT p.id AS product_id, p.name AS product_name, b.brand_name, p.stock, p.price, p.description,
+               GROUP_CONCAT(DISTINCT s.size_value ORDER BY s.size_value ASC) AS sizes,
+               GROUP_CONCAT(DISTINCT pi.image_path ORDER BY pi.image_path ASC) AS images
+        FROM products p
+        JOIN brands b ON p.brand_id = b.brand_id
+        LEFT JOIN product_sizes ps ON p.id = ps.id
+        LEFT JOIN sizes s ON ps.size_id = s.size_id
+        LEFT JOIN product_images pi ON p.id = pi.product_id
+        GROUP BY p.id
+        ORDER BY p.id
+    ";
+
+    $result = $mysqli->query($query);
+
+    if (!$result) {
+        throw new Exception("Query failed: " . $mysqli->error);
+    }
+
+    // Fetch all products
+    $products = $result->fetch_all(MYSQLI_ASSOC);
+    $result->free();
+
+    if (empty($products)) {
+        $message = "No products found.";
+    }
+} catch (Exception $e) {
+    $message = "Database error: " . $e->getMessage();
+}
+
+// Close the database connection
+$mysqli->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products</title>
-    <link rel="stylesheet" href="products.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,13 +62,13 @@
 
         .sidebar {
             width: 250px;
-            background-color: #121416; /* Color 3 */
+            background-color: #121416; /* Dark background color */
             padding: 20px;
             min-height: 100vh;
         }
 
         .sidebar h2 {
-            color: #efc143; /* Color 1 */
+            color: #efc143; /* Yellow color */
             font-size: 22px;
             text-align: center;
         }
@@ -49,7 +92,7 @@
         }
 
         .sidebar ul li a:hover {
-            background-color: #eb7324; /* Color 2 */
+            background-color: #eb7324; /* Orange color */
             border-radius: 5px;
         }
 
@@ -59,7 +102,7 @@
         }
 
         .main-content header {
-            background-color: #efc143; /* Color 1 */
+            background-color: #efc143; /* Yellow color */
             padding: 20px;
             border-bottom: 1px solid #e1e1e1;
             display: flex;
@@ -69,7 +112,7 @@
 
         .main-content h2 {
             margin-top: 0;
-            color: #121416; /* Color 3 */
+            color: #121416; /* Dark color */
         }
 
         .main-content input[type="text"] {
@@ -79,7 +122,7 @@
         }
 
         .user-info {
-            color: #121416; /* Color 3 */
+            color: #121416; /* Dark color */
         }
 
         .table-container {
@@ -101,7 +144,7 @@
         }
 
         table th {
-            background-color: #eb7324; /* Color 2 */
+            background-color: #eb7324; /* Orange color */
             color: #ffffff;
             font-weight: bold;
         }
@@ -110,11 +153,7 @@
             background-color: #f2f2f2;
         }
 
-        /* Adjust table size */
-        table {
-            
-        }
-
+        /* Ensure table size fits well */
         table th, table td {
             text-overflow: ellipsis;
             overflow: hidden;
@@ -138,7 +177,6 @@
         </nav>
 
         <div class="main-content">
-        
             <header>
                 <input type="text" placeholder="Search...">
                 <div class="user-info">
@@ -146,8 +184,12 @@
                 </div>
             </header>
             <br>
-            
+
             <h2>Products</h2>
+
+            <?php if (!empty($message)): ?>
+                <div class="message"><?php echo htmlspecialchars($message); ?></div>
+            <?php endif; ?>
 
             <div class="table-container">
                 <table>
@@ -155,14 +197,40 @@
                         <tr>
                             <th>#</th>
                             <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
+                            <th>Brand</th>
                             <th>Stock</th>
-                            <th>Size</th> <!-- Added column for Size -->
+                            <th>Price</th>
+                            <th>Description</th>
+                            <th>Sizes</th>
+                            <th>Images</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Products will be listed here -->
+                        <?php if (!empty($products)): ?>
+                            <?php foreach ($products as $product): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($product['product_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($product['product_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($product['brand_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($product['stock']); ?></td>
+                                    <td><?php echo htmlspecialchars($product['price']); ?></td>
+                                    <td><?php echo htmlspecialchars($product['description']); ?></td>
+                                    <td><?php echo htmlspecialchars($product['sizes']); ?></td>
+                                    <td>
+                                        <?php if (!empty($product['images'])): ?>
+                                            <?php $images = explode(',', $product['images']); ?>
+                                            <?php foreach ($images as $image): ?>
+                                                <img src="<?php echo htmlspecialchars($image); ?>" alt="Product Image" style="max-width: 100px; max-height: 100px;">
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="8">No products found.</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

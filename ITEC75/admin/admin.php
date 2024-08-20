@@ -3,7 +3,7 @@
 include '../db.php'; // Ensure this file contains the database connection setup
 
 // Fetch the total count of registered users
-$sql = "SELECT COUNT(*) as total_users FROM users";
+$sql = "SELECT COUNT(*) as total_users FROM users WHERE role != 0";
 $result = $mysqli->query($sql);
 $total_users = 0;
 
