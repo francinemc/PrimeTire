@@ -1,164 +1,271 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Detail</title>
-    <link rel="stylesheet" href="cart.css">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<?php
-    include 'navbar.php';?>
-
     <header>
-        <h1>Shopping Cart</h1>
+    <?php include 'navbar.php'; ?>
     </header>
+
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Header */
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        main {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .cart-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .cart {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            padding: 20px;
+        }
+
+        .cart-items {
+            flex: 3;
+            margin-right: 20px;
+        }
+
+        .cart-header {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr;
+            background-color: #efefef;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+            font-weight: bold;
+        }
+
+        .header-item {
+            text-align: center;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .item-product, .item-price, .item-quantity, .item-total, .item-remove {
+            text-align: center;
+        }
+
+        .item-quantity input {
+            width: 60px;
+            text-align: center;
+        }
+
+        .remove-btn {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .cart-totals {
+            flex: 1;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .totals-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .value {
+            color: #333;
+        }
+
+        .proceed-checkout {
+            background-color: #27ae60;
+            margin-top: 20px;
+        }
+
+        .proceed-checkout:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Buttons */
+        .cart-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .update-cart {
+            background-color: #3498db;
+            margin-right: 10px;
+        }
+
+        .update-cart:hover {
+            background-color: #2980b9;
+        }
+
+        .continue-shopping {
+            background-color: #27ae60;
+            margin-left: 10px;
+        }
+
+        .continue-shopping:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Info Section */
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .info-item .icon-img {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .info-item p {
+            margin: 0;
+        }
+    </style>
+
+    <div class="info-item">
+        <span class="icon-img">1</span>
+        <p>Shopping cart</p>
+    </div>
+    <div class="info-item">
+        <span class="icon-img">2</span>
+        <p>Checkout</p>
+    </div>
+    <div class="info-item">
+        <span class="icon-img">3</span>
+        <p>Order complete</p>
+    </div>
+
     <main>
-        <section class="cart-container">
-            <section class="cart">
-                <h2>Selected Products</h2>
-                <div class="cart-content">
-                    <table id="cart-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Subtotal</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        
-                        </tbody>
-                    </table>
-                </div>
-                <div class="total">
-                    <strong>Total: $<span id="total-price">0.00</span></strong>
-                </div>
-            </section>
-            <section class="cart-summary">
-                <h2>Cart Summary</h2>
-                <div class="summary-item">
-                    <span>Subtotal:</span>
-                    <span id="subtotal-price">0.00</span>
-                </div>
-                <div class="summary-item">
-                    <span>Shipping:</span>
-                    <span id="shipping-price">P35.00</span>
-                </div>
-                <div class="summary-item">
-                    <span>Tax:</span>
-                    <span id="tax-price">P0.00</span>
-                </div>
-                <div class="summary-item">
-                    <span>Total:</span>
-                    <span id="final-total">P0.00</span>
-                </div>
-                <div class="checkout">
-                    <button onclick="checkout()">Checkout</button>
-                    <select id="delivery-address">
-                        <option value="">Select Delivery Address</option>
-                        <option value="address1">123 Main St</option>
-                        <option value="address2">456 Elm St</option>
-                    </select>
-                </div>
-            </section>
-        </section>
-        <section class="featured-products">
-            <h2>Featured Products</h2>
-            <div class="slider">
-                <button class="slider-control prev" onclick="prevSlide()">&#10094;</button>
-                <div class="slider-wrapper">
-                    <div class="slider-track">
-                        <!-- Product details -->
-                        <div class="product" data-id="1" data-price="25.00">
-                            <img src="https://via.placeholder.com/150" alt="Featured Product 1">
-                            <div class="product-info">
-                                <h3>Featured Product 1</h3>
-                                <p>$25.00</p>
-                                <button onclick="addToCart(1, 25.00)">Add to Cart</button>
-                            </div>
-                        </div>
-                        <!-- Repeat for more products -->
-                        <div class="product" data-id="2" data-price="30.00">
-                            <img src="https://via.placeholder.com/150" alt="Featured Product 2">
-                            <div class="product-info">
-                                <h3>Featured Product 2</h3>
-                                <p>$30.00</p>
-                                <button onclick="addToCart(2, 30.00)">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div class="product" data-id="2" data-price="30.00">
-                            <img src="https://via.placeholder.com/150" alt="Featured Product 2">
-                            <div class="product-info">
-                                <h3>Featured Product 2</h3>
-                                <p>$30.00</p>
-                                <button onclick="addToCart(2, 30.00)">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div class="product" data-id="2" data-price="30.00">
-                            <img src="https://via.placeholder.com/150" alt="Featured Product 2">
-                            <div class="product-info">
-                                <h3>Featured Product 2</h3>
-                                <p>$30.00</p>
-                                <button onclick="addToCart(2, 30.00)">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div class="product" data-id="2" data-price="30.00">
-                            <img src="https://via.placeholder.com/150" alt="Featured Product 2">
-                            <div class="product-info">
-                                <h3>Featured Product 2</h3>
-                                <p>$30.00</p>
-                                <button onclick="addToCart(2, 30.00)">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div class="product" data-id="2" data-price="30.00">
-                            <img src="https://via.placeholder.com/150" alt="Featured Product 2">
-                            <div class="product-info">
-                                <h3>Featured Product 2</h3>
-                                <p>$30.00</p>
-                                <button onclick="addToCart(2, 30.00)">Add to Cart</button>
-                            </div>
-                        </div>
-                        <div class="product" data-id="2" data-price="30.00">
-                            <img src="https://via.placeholder.com/150" alt="Featured Product 2">
-                            <div class="product-info">
-                                <h3>Featured Product 2</h3>
-                                <p>$30.00</p>
-                                <button onclick="addToCart(2, 30.00)">Add to Cart</button>
-                            </div>
-                        </div>
-                        
+        <div class="cart-container">
+            <div class="cart">
+                <div class="cart-items">
+                    <div class="cart-header">
+                        <div class="header-item">Image</div>
+                        <div class="header-item">Product</div>
+                        <div class="header-item">Price</div>
+                        <div class="header-item">Quantity</div>
+                        <div class="header-item">Total</div>
+                        <div class="header-item">Remove</div>
+                    </div>
+                    
+                    <div class="cart-item">
+                        <div class="item-image" style="background-image: url('images/product1.jpg');"></div>
+                        <div class="item-product">Product 1</div>
+                        <div class="item-price">$49.00</div>
+                        <div class="item-quantity"><input type="number" value="1" min="1" max="100"></div>
+                        <div class="item-total">$49.00</div>
+                        <div class="item-remove"><button class="remove-btn">Remove</button></div>
+                    </div>
+                    
+                    <div class="cart-item">
+                        <div class="item-image" style="background-image: url('images/product2.jpg');"></div>
+                        <div class="item-product">Product 2</div>
+                        <div class="item-price">$49.00</div>
+                        <div class="item-quantity"><input type="number" value="1" min="1" max="100"></div>
+                        <div class="item-total">$49.00</div>
+                        <div class="item-remove"><button class="remove-btn">Remove</button></div>
                     </div>
                 </div>
-                <button class="slider-control next" onclick="nextSlide()">&#10095;</button>
-            </div>
-        </section>
-    </main>
-    <script>
-      function addToCart(productId, price) {
-          const quantity = 1; // Default quantity; can be adjusted if needed
-          
-          // Create FormData object
-          const formData = new FormData();
-          formData.append('product_id', productId);
-          formData.append('quantity', quantity);
 
-          // Send AJAX request
-          fetch('cart.php', {
-              method: 'POST',
-              body: formData
-          })
-          .then(response => response.text())
-          .then(data => {
-              alert('Product added to cart');
-              console.log(data); // Optional: For debugging
-          })
-          .catch(error => {
-              console.error('Error:', error);
-          });
-      }
-    </script>
+                <div class="cart-totals">
+                    <div class="totals-header">Cart Totals</div>
+                    <div class="totals-row">
+                        <span class="label">Subtotal</span>
+                        <span class="value">$230.00</span>
+                    </div>
+                    <div class="totals-row">
+                        <span class="label">Total</span>
+                        <span class="value">$230.00</span>
+                    </div>
+                    <button class="btn proceed-checkout">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Buttons for updating cart and continuing shopping -->
+    <div class="cart-buttons">
+        <button class="btn update-cart">Update Cart</button>
+        <button class="btn continue-shopping">Continue Shopping</button>
+    </div>
 </body>
 </html>

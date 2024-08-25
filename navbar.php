@@ -125,7 +125,7 @@
             <a href=""><i class="fas fa-user icon-img" aria-label="Account"></i></a>
             </div>
         <div class="icon cart">
-            <a href="cart.php"><i class="fas fa-shopping-cart icon-img" aria-label="Cart"></i></a>
+            <a href="checkout.php"><i class="fas fa-shopping-cart icon-img" aria-label="Cart"></i></a>
             </div>
         <div class="icon menu-toggle">
           <i class="fas fa-bars icon-img" aria-label="Menu"></i>
