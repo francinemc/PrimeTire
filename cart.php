@@ -1,3 +1,18 @@
+
+<?php
+session_start();
+include 'db.php';
+
+if (isset($_POST['deelete'])) {
+    $item = $_POST['item_id'];
+
+    $sql = "DELETE FROM tblname WHERE id = ?";
+
+    if ($stmt =$conn->prepare($sql)){
+        
+    }
+}
+?>
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -226,24 +241,22 @@
                         <div class="header-item">Total</div>
                         <div class="header-item">Remove</div>
                     </div>
-                    
-                    <div class="cart-item">
-                        <div class="item-image" style="background-image: url('images/product1.jpg');"></div>
-                        <div class="item-product">Product 1</div>
-                        <div class="item-price">$49.00</div>
-                        <div class="item-quantity"><input type="number" value="1" min="1" max="100"></div>
-                        <div class="item-total">$49.00</div>
-                        <div class="item-remove"><button class="remove-btn">Remove</button></div>
-                    </div>
-                    
-                    <div class="cart-item">
-                        <div class="item-image" style="background-image: url('images/product2.jpg');"></div>
-                        <div class="item-product">Product 2</div>
-                        <div class="item-price">$49.00</div>
-                        <div class="item-quantity"><input type="number" value="1" min="1" max="100"></div>
-                        <div class="item-total">$49.00</div>
-                        <div class="item-remove"><button class="remove-btn">Remove</button></div>
-                    </div>
+                    <?php
+                    $cartQuery = "SELECT * FROM cart_items INNER JOIN products ON cart_items.product_id=products.id WHERE user_id='".$_SESSION['user_id']."'";
+                    $result = $mysqli->query($cartQuery);
+                    if ($result->num_rows > 0){
+                        foreach($result as $row){
+                            echo "<div class='cart-item'>
+                                    <div class='item-image' style='background-image: url(images/product1.jpg);'></div>
+                                    <div class='item-product'>".$row['name']."</div>
+                                    <div class='item-price'>$".$row['price']."</div>
+                                    <div class='item-quantity'><input type='number' value='1' min='1' max='100'></div>
+                                    <div class='item-total'>$".$row['total']."</div>
+                                    <div class='item-remove'><button class='remove-btn'>Remove</button></div>
+                                </div>";
+                        }
+                    }
+                    ?>
                 </div>
 
                 <div class="cart-totals">
