@@ -1,11 +1,33 @@
 <?php 
 include 'db.php';
+session_start();
 
+// Initialize message variable
+$message = '';
+
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+} else {
+    $user_id = null; // or handle it as needed
+}
 $data = $mysqli->real_escape_string($_GET['id']);
 
 // Fetch product details
 $sqlProducts = "SELECT * FROM products WHERE id='$data'";
 $resultProducts = $mysqli->query($sqlProducts);
+
+$productId = $_GET['id'];
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    $quantity = $_POST['quantity'];
+    $total = $_SESSION['price'] * $quantity;
+    $stmt = $mysqli->prepare("INSERT INTO cart_items(user_id,product_id,quantity,price,total) VALUES(?,?,?,?,?);");
+    $stmt->bind_param('iiidd',$user_id, $productId, $quantity,$_SESSION['price'],$total);
+    if ($stmt->execute()) {
+        $message = "Added to Cart.";
+    } else {
+        $message = "Error: " . $stmt->error;
+    }
+}
 
 ?>
 
@@ -136,17 +158,19 @@ $resultProducts = $mysqli->query($sqlProducts);
 
     <?php if ($resultProducts->num_rows > 0) { 
         $row = $resultProducts->fetch_assoc(); ?>
-
-    <div class="container py-4 px-0">
+<form action="" method='post'>
+    
+<div class="container py-4 px-0">
         <div class="row">
             <div class="col-md-7">
                 <div class="row">
                     <div class="big-side-pic col-md-3" id="side-tire">
                         <?php 
                         $product_id = $row['id'];
+                        $_SESSION['price'] = $row['price'];
+                        $productId = $product_id;
                         $sqlProducts = "SELECT * FROM product_images WHERE product_id='$product_id' LIMIT 2";
                         $thumbnailProducts = $mysqli->query($sqlProducts);
-
                         if ($thumbnailProducts->num_rows > 0) {
                             while ($thumbnailImage = $thumbnailProducts->fetch_assoc()) { ?>
                                 <img class="side-pic img-fluid" src="admin/uploads/<?php echo htmlspecialchars($thumbnailImage['image_path']); ?>" alt="Product Thumbnail" onerror="this.onerror=null;this.src='images/default-product.jpg';" />
@@ -177,7 +201,8 @@ $resultProducts = $mysqli->query($sqlProducts);
                     <span class="fa fa-star"></span>
                     <span class="ml-1">120+ Reviews</span>
                 </div>
-                <h5 class="pb-1" id="price-lead">₱<span id="price"><?php echo htmlspecialchars($row['price']); ?></span></h5>
+                <h5 class="pb-1" id="price-lead">₱<span id="price"><?php echo htmlspecialchars($row['price']); 
+                ?></span></h5>
                 <h4 class="pb-3 pt-0 mt-0" id="total-lead">₱<span id="total">₱<?php echo htmlspecialchars($row['price']); ?></span></h4>
                 
                 <div class="quantity-container">
@@ -204,10 +229,11 @@ $resultProducts = $mysqli->query($sqlProducts);
                     } ?>
                 </div>
                 <div class="row">
-                 <a href="cart.php" class="buy-now col-sm-5 mr-3 btn btn-warning">Add to Cart</a>
+                 <button type="submit" href="" class="buy-now col-sm-5 mr-3 btn btn-warning">Add to Cart</button>
                  <a href="checkout.php" class="add-to-cart col-sm-5 btn btn-info">Checkout</a>
                </div>
 
+</form>
         </div>
         <div class="container">
         <hr /><br>
